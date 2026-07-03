@@ -1,180 +1,163 @@
 import { useState, useEffect } from 'react';
 import examData from './examData.json';
+import { useExamState } from './hooks/useExamState';
+import { useTimer } from './hooks/useTimer';
+import { useAnswerTracking } from './hooks/useAnswerTracking';
+import { ExamHeader } from './components/ExamHeader';
+import { QuestionCard } from './components/QuestionCard';
+import { OptionList } from './components/OptionList';
+import { NavigationButtons } from './components/NavigationButtons';
+import { ResultsScreen } from './components/ResultsScreen';
+import { validateExamData } from './utils/examUtils';
 import './App.css';
 
 function App() {
-  // Track which question the student is currently on
-  const [currentIndex, setCurrentIndex] = useState(0);
-  // Track student's selected answer for each question
-  const [answers, setAnswers] = useState({});
-  // Track countdown timer
-  const [timeLeft, setTimeLeft] = useState(examData.durationMinutes * 60);
-
-  const currentQuestion = examData.questions[currentIndex];
-
-  // Timer countdown effect
+  // Validate exam data on load
+  const [error, setError] = useState(null);
+  
   useEffect(() => {
-    if (timeLeft <= 0) return;
-    
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  // Format time as MM:SS
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Handle answer selection
-  const handleAnswerChange = (optionIndex) => {
-    setAnswers({
-      ...answers,
-      [currentIndex]: optionIndex
-    });
-  };
-
-  // Navigate to next question
-  const handleNext = () => {
-    if (currentIndex < examData.questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    const validation = validateExamData(examData);
+    if (!validation.valid) {
+      setError(validation.error);
+      console.error('Exam data validation failed:', validation.error);
     }
-  };
+  }, []);
 
-  // Navigate to previous question
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+  // Initialize hooks
+  const exam = useExamState(examData);
+  const timer = useTimer(examData?.durationMinutes || 60);
+  useAnswerTracking(exam.answers, examData?.examId || 'default');
+
+  // Auto-submit if time is up
+  useEffect(() => {
+    if (timer.isTimeUp && !exam.isSubmitted) {
+      exam.submit();
     }
-  };
+  }, [timer.isTimeUp]);
 
-  // Submit exam
+  // Handle submission
   const handleSubmit = () => {
-    console.log('Submitted answers:', answers);
-    alert('Exam submitted! Check console for answers.');
+    console.log('Exam submitted with answers:', exam.answers);
+    exam.submit();
   };
 
-  return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      
-      {/* Header */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '3px solid #2c3e50', paddingBottom: '10px', marginBottom: '20px' }}>
-        <div>
-          <h2 style={{ margin: 0, color: '#2c3e50' }}>{examData.subject}</h2>
-          <span style={{ color: '#7f8c8d' }}>Class: {examData.class}</span>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <h3 style={{ margin: 0, color: timeLeft <= 300 ? '#e74c3c' : '#2c3e50' }}>
-            Time Left: {formatTime(timeLeft)}
-          </h3>
-        </div>
-      </header>
+  // Handle retry
+  const handleRetry = () => {
+    window.location.reload();
+  };
 
-      {/* Question Area */}
-      <main style={{ backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
-        <h4 style={{ margin: '0 0 15px 0', color: '#34495e' }}>
-          Question {currentIndex + 1} of {examData.questions.length}
-        </h4>
-        
-        <p style={{ fontSize: '18px', fontWeight: 'bold', lineHeight: '1.5' }}>
-          {currentQuestion.questionText}
-        </p>
-        
-        {/* Options */}
-        <fieldset style={{ border: 'none', padding: 0, margin: '20px 0' }}>
-          <legend style={{ display: 'none' }}>Answer options</legend>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {currentQuestion.options.map((option, index) => (
-              <label 
-                key={index} 
-                style={{ 
-                  padding: '12px', 
-                  border: answers[currentIndex] === index ? '2px solid #3498db' : '1px solid #ccc', 
-                  borderRadius: '6px', 
-                  cursor: 'pointer', 
-                  backgroundColor: answers[currentIndex] === index ? '#ecf0f1' : '#fff', 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <input 
-                  type="radio" 
-                  name={`question-${currentIndex}`}
-                  value={index} 
-                  checked={answers[currentIndex] === index}
-                  onChange={() => handleAnswerChange(index)}
-                  style={{ marginRight: '15px', transform: 'scale(1.2)', cursor: 'pointer' }} 
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      </main>
-
-      {/* Navigation Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px', gap: '10px' }}>
-        <button
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: currentIndex === 0 ? '#bdc3c7' : '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }}
-        >
-          Previous
-        </button>
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {currentIndex < examData.questions.length - 1 && (
-            <button
-              onClick={handleNext}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#27ae60',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}
-            >
-              Next
-            </button>
-          )}
-          
-          {currentIndex === examData.questions.length - 1 && (
-            <button
-              onClick={handleSubmit}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#e74c3c',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}
-            >
-              Submit Exam
-            </button>
-          )}
+  // Show error screen if validation failed
+  if (error) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#f5f5f5',
+        padding: '20px'
+      }}>
+        <div style={{
+          maxWidth: '600px',
+          padding: '40px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          border: '2px solid #e74c3c',
+          textAlign: 'center'
+        }}>
+          <h1 style={{ color: '#e74c3c', marginBottom: '15px' }}>⚠️ Error</h1>
+          <p style={{ fontSize: '16px', color: '#2c3e50', marginBottom: '20px' }}>
+            {error}
+          </p>
+          <p style={{ fontSize: '14px', color: '#7f8c8d' }}>
+            Please contact your administrator.
+          </p>
         </div>
       </div>
+    );
+  }
 
+  // Show results screen after submission
+  if (exam.isSubmitted) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#f5f5f5',
+        padding: '20px'
+      }}>
+        <ResultsScreen
+          examData={examData}
+          answers={exam.answers}
+          onRetry={handleRetry}
+        />
+      </div>
+    );
+  }
+
+  // Show exam screen
+  return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f5f5f5',
+      padding: '20px'
+    }}>
+      <div style={{
+        maxWidth: '900px',
+        margin: '0 auto'
+      }}>
+        {/* Header with timer */}
+        <ExamHeader
+          examData={examData}
+          formattedTime={timer.formattedTime}
+          isWarning={timer.isWarning}
+          isTimeUp={timer.isTimeUp}
+        />
+
+        {/* Question display */}
+        {exam.currentQuestion && (
+          <>
+            <QuestionCard
+              questionNumber={exam.currentIndex + 1}
+              totalQuestions={exam.totalQuestions}
+              questionText={exam.currentQuestion.questionText}
+              progress={exam.progress}
+            />
+
+            {/* Answer options */}
+            <OptionList
+              options={exam.currentQuestion.options}
+              selectedAnswerIndex={exam.answers[exam.currentIndex]}
+              onSelectAnswer={exam.selectAnswer}
+            />
+
+            {/* Navigation controls */}
+            <NavigationButtons
+              isFirstQuestion={!exam.canGoPrevious}
+              isLastQuestion={!exam.canGoNext}
+              onPrevious={exam.goToPrevious}
+              onNext={exam.goToNext}
+              onSubmit={handleSubmit}
+              isAnswered={exam.isAnswered}
+            />
+          </>
+        )}
+
+        {/* Time warning message */}
+        {timer.isTimeUp && (
+          <div style={{
+            marginTop: '20px',
+            padding: '15px',
+            backgroundColor: '#fadbd8',
+            border: '2px solid #e74c3c',
+            borderRadius: '6px',
+            textAlign: 'center',
+            color: '#c0392b',
+            fontWeight: 'bold'
+          }}>
+            ⏰ Time is up! Your exam will be submitted automatically.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
