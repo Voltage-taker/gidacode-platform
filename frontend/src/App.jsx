@@ -1,49 +1,122 @@
-import { useState } from 'react';
-import examData from './examData.json';
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from './assets/vite.svg'
+import heroImg from './assets/hero.png'
+import './App.css'
 
 function App() {
-  // This state tracks which question number the student is currently on
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const currentQuestion = examData.questions[currentIndex];
+  const [count, setCount] = useState(0)
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      
-      {/* 1. The Header */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '3px solid #2c3e50', paddingBottom: '10px', marginBottom: '20px' }}>
+    <>
+      <section id="center">
+        <div className="hero">
+          <img src={heroImg} className="base" width="170" height="179" alt="" />
+          <img src={reactLogo} className="framework" alt="React logo" />
+          <img src={viteLogo} className="vite" alt="Vite logo" />
+        </div>
         <div>
-          <h2 style={{ margin: 0, color: '#2c3e50' }}>{examData.subject}</h2>
-          <span style={{ color: '#7f8c8d' }}>Class: {examData.class}</span>
+          <h1>Get started</h1>
+          <p>
+            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+          </p>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <h3 style={{ margin: 0, color: '#e74c3c' }}>Time Left: 60:00</h3>
-        </div>
-      </header>
+        <button
+          type="button"
+          className="counter"
+          onClick={() => setCount((count) => count + 1)}
+        >
+          Count is {count}
+        </button>
+      </section>
 
-      {/* 2. The Question Area */}
-      <main style={{ backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
-        <h4 style={{ margin: '0 0 15px 0', color: '#34495e' }}>
-          Question {currentIndex + 1} of {examData.questions.length}
-        </h4>
-        
-        <p style={{ fontSize: '18px', fontWeight: 'bold', lineHeight: '1.5' }}>
-          {currentQuestion.questionText}
-        </p>
-        
-        {/* 3. The Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-          {currentQuestion.options.map((option, index) => (
-            <label key={index} style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#fff', display: 'flex', alignItems: 'center' }}>
-              <input type="radio" name="examOption" value={index} style={{ marginRight: '15px', transform: 'scale(1.2)' }} />
-              {option}
-            </label>
-          ))}
-        </div>
-      </main>
+      <div className="ticks"></div>
 
-    </div>
-  );
+      <section id="next-steps">
+        <div id="docs">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#documentation-icon"></use>
+          </svg>
+          <h2>Documentation</h2>
+          <p>Your questions, answered</p>
+          <ul>
+            <li>
+              <a href="https://vite.dev/" target="_blank">
+                <img className="logo" src={viteLogo} alt="" />
+                Explore Vite
+              </a>
+            </li>
+            <li>
+              <a href="https://react.dev/" target="_blank">
+                <img className="button-icon" src={reactLogo} alt="" />
+                Learn more
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div id="social">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#social-icon"></use>
+          </svg>
+          <h2>Connect with us</h2>
+          <p>Join the Vite community</p>
+          <ul>
+            <li>
+              <a href="https://github.com/vitejs/vite" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#github-icon"></use>
+                </svg>
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href="https://chat.vite.dev/" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#discord-icon"></use>
+                </svg>
+                Discord
+              </a>
+            </li>
+            <li>
+              <a href="https://x.com/vite_js" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#x-icon"></use>
+                </svg>
+                X.com
+              </a>
+            </li>
+            <li>
+              <a href="https://bsky.app/profile/vite.dev" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#bluesky-icon"></use>
+                </svg>
+                Bluesky
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <div className="ticks"></div>
+      <section id="spacer"></section>
+    </>
+  )
 }
 
-export default App;
-
+export default App
