@@ -1,0 +1,45 @@
+{
+  "examId": "GOV_SS2C_T3_2025_2026",
+  "subject": "Government",
+  "class": "SS2C",
+  "instructions": "Answer all questions in this section.",
+  "durationMinutes": 60,
+  "questions": [
+    {
+      "id": 1,
+      "type": "objective",
+      "questionText": "Who is popularly known as the \"Father of Nigerian Nationalism\"?",
+      "options": [
+        "Nnamdi Azikiwe",
+        "Obafemi Awolowo",
+        "Herbert Macaulay",
+        "Ahmadu Bello"
+      ],
+      "correctAnswerIndex": 2
+    },
+    {
+      "id": 2,
+      "type": "objective",
+      "questionText": "Nationalism can be defined as ____.",
+      "options": [
+        "Love for one's ethnic group",
+        "Support for colonial rule",
+        "Regional loyalty above national interest",
+        "Strong devotion to one's country and desire for self-rule"
+      ],
+      "correctAnswerIndex": 3
+    },
+    {
+      "id": 3,
+      "type": "objective",
+      "questionText": "The elective principle was first introduced by the ____.",
+      "options": [
+        "Richards Constitution",
+        "Clifford Constitution",
+        "Macpherson Constitution",
+        "Lyttleton Constitution"
+      ],
+      "correctAnswerIndex": 1
+    }
+  ]
+}
