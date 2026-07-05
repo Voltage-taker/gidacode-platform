@@ -1,7 +1,5 @@
-"scripts": {
-  "start": "node server.js"
-}{
-  "name": "gidacode-platform",
+
+ "name": "gidacode-platform",
   "version": "1.0.0",
   "description": "Offline-first national CBT and education infrastructure system",
   "scripts": {
@@ -10,7 +8,7 @@
     "preview": "cd frontend && npm run preview"
   },
   "workspaces": [
-    "frontend",
+    "rontend",
     "api"
   ],
   "keywords": [
