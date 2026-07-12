@@ -1,22 +1,14 @@
-"name": "gidacode-platform",
-  "version": "1.0.0",
+{
+  "name": "gidacode-platform",
+  "version": "0.0.0",
   "description": "Offline-first national CBT and education infrastructure system",
   "scripts": {
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "preview": "cd frontend && npm run preview"
   },
-  "workspaces": [
-    "rontend",
-    "api"
-  ],
-  "keywords": [
-    "CBT",
-    "education",
-    "examination",
-    "offline-first",
-    "Nigeria"
-  ],
+  "workspaces": ["frontend", "api"],
+  "keywords": ["CBT", "education", "examination", "offline-first", "Nigeria"],
   "author": "Voltage-taker",
   "license": "MIT"
 }
